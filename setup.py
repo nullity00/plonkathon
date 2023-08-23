@@ -11,7 +11,7 @@ from poly import Polynomial, Basis
 SETUP_FILE_G1_STARTPOS = 80
 SETUP_FILE_POWERS_POS = 60
 
-
+# G, tGx, t^2Gx, ..., t^{d-1}G
 @dataclass
 class Setup(object):
     #   ([1]₁, [x]₁, ..., [x^{d-1}]₁)
@@ -67,11 +67,30 @@ class Setup(object):
         assert values.basis == Basis.LAGRANGE
 
         # Run inverse FFT to convert values from Lagrange basis to monomial basis
+        monomial_basis = values.ifft()
         # Optional: Check values size does not exceed maximum power setup can handle
+        # 2x + 5x2
+        assert len(monomial_basis.values) <= len(self.powers_of_x)
         # Compute linear combination of setup with values
-        return NotImplemented
+        pairs = [] # have a look at it later
+        for i in range(len(monomial_basis.values)):
+            pairs.append((self.powers_of_x[i], monomial_basis.values[i]))
+        return ec_lincomb(pairs)
+        # 
 
     # Generate the verification key for this program with the given setup
     def verification_key(self, pk: CommonPreprocessedInput) -> VerificationKey:
         # Create the appropriate VerificationKey object
-        return NotImplemented
+        return VerificationKey(
+            group_order=pk.group_order, 
+            Qm=self.commit(pk.QM), 
+            Ql=self.commit(pk.QL), 
+            Qr=self.commit(pk.QR), 
+            Qo=self.commit(pk.QO), 
+            Qc=self.commit(pk.QC), 
+            S1=self.commit(pk.S1), 
+            S2=self.commit(pk.S2), 
+            S3=self.commit(pk.S3), 
+            X_2=self.X2, 
+            w=Scalar.root_of_unity(group_order=pk.group_order)
+        )
