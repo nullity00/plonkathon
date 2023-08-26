@@ -19,7 +19,7 @@ Let's start with our [setup.py](https://github.com/nullity00/plonkathon/blob/mai
 
 ### ``def from_file(cls, filename):``
 
-- We start by reading a binary file which happens to be ``powersOfTau28_hez_final_11.ptau``. If you're curious to know how it looks, look at [ptau.txt](). If that didn't make sense to you, it's fine. We convert those binary vaues to integer values & then operate on them (look at [ptau.json]()). 
+- We start by reading a binary file which happens to be ``powersOfTau28_hez_final_11.ptau``. If you're curious to know how it looks, look at [ptau.txt](https://github.com/nullity00/plonkathon/blob/main/ptau.txt). If that didn't make sense to you, it's fine. We convert those binary vaues to integer values & then operate on them (look at [ptau.json](https://github.com/nullity00/plonkathon/blob/main/ptau.json)). 
 - Byte 60 of the ptau file gives you the base-2 log of the value of ``powers``
 -   ```
         contents[60] = log_2(d)
