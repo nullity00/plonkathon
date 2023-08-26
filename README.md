@@ -13,7 +13,7 @@ Ref : Plonk by Hand [Part 1](https://research.metastate.dev/plonk-by-hand-part-1
 
 Let's start with our [setup.py](https://github.com/nullity00/plonkathon/blob/main/setup.py). 
 
-### def from_file(cls, filename):
+### ``def from_file(cls, filename):``
 
 - We start by reading a binary file which happens to be ``powersOfTau28_hez_final_11.ptau``. If you're curious to know how it looks, look at [ptau.txt](). If that didn't make sense to you, it's fine. We convert those binary vaues to integer values & then operate on them (look at [ptau.json]()). 
 - Byte 60 of the ptau file gives you the base-2 log of the value of ``powers``
@@ -39,11 +39,12 @@ Let's start with our [setup.py](https://github.com/nullity00/plonkathon/blob/mai
         8495653923123431417604973247489272438418190587263600148770280649306958101930,
         4082367875863433681332203403145435568316851327593401208105741076214120093531,
     ]),
-)```
+)
+```
 - FQ2 is a class of field points in ``[py_ecc](https://github.com/ethereum/py_ecc/blob/master/py_ecc/fields/field_elements.py#L357)``
 - We then obtain the start of G2 points & return ``(powers_of_x, X2)`` where X2 is the starting point in G2.
 
-### def commit(self, values: Polynomial) -> G1Point:
+### ``def commit(self, values: Polynomial) -> G1Point``
 
 - 
 
