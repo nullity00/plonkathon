@@ -156,3 +156,13 @@ Given a polynomial expressed as a list of evaluations at roots of unity, evaluat
 - Compute the linearization polynomial, R & commit to it
 - Compute the polynomials Wz & Wzw , commit to it
 
+## PLONK in Rust
+
+- [Plonk by Fingers](https://github.com/adria0/plonk-by-fingers)
+- [Plonk by Hand](https://github.com/kcharbo3/Plonk-By-Hand)
+
+## Now, try Goblin Plonk (This has nothing to do with PLONK)
+![image](https://github.com/nullity00/plonkathon/assets/70228821/3ea7df5c-8d8b-44ef-9b63-75be31e04ee6)
+
+
+
