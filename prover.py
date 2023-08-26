@@ -147,22 +147,19 @@ class Prover:
         # Z_values for permutation grand product polynomial Z
 
         # Note the convenience function:
-        #       self.rlc(val1, val2) = val_1 + self.beta * val_2 + gamma
-
-        # Round 2 is about committing to a single polynomial z
-        # that encodes all of the copy constraints we discussed earlier.
+        # self.rlc(val1, val2) = val_1 + self.beta * val_2 + gamma
 
         roots_of_unity = Scalar.roots_of_unity(group_order)
 
-        # t1 + t2 * beta +  gamma
-
         Z_values = [Scalar(1)]
         for i in range(1, group_order + 1):
+            # (a1 + beta * w1 + gamma) * (b1 + beta * w1 + gamma) * (c1 + beta * w1 + gamma )
             numer = (
                 self.rlc(self.A.values[i - 1], roots_of_unity[i - 1])
                 * self.rlc(self.B.values[i - 1], 2 * roots_of_unity[i - 1])
                 * self.rlc(self.C.values[i - 1], 3 * roots_of_unity[i - 1])
             )
+            # (a1 + beta * s1 + gamma) * (b1 + beta * s2 + gamma) * (c1 + beta * s3 + gamma )
             deno = (
                 self.rlc(self.A.values[i - 1], self.pk.S1.values[i - 1])
                 * self.rlc(self.B.values[i - 1], self.pk.S2.values[i - 1])

@@ -174,7 +174,7 @@ class Polynomial:
         )
 
     # Given a polynomial expressed as a list of evaluations at roots of unity,
-    # evaluate it at x directly, without using an FFT to covert to coeffs first
+    # evaluate it at x directly, without using an FFT to convert to coeffs first
     def barycentric_eval(self, x: Scalar):
         assert self.basis == Basis.LAGRANGE
 

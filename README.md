@@ -6,6 +6,10 @@ This is probably the simplest way to get to know how PLONK works. Just a few pre
 - [PLONK explainer](https://www.youtube.com/watch?v=A0oZVEXav24) by Dan Boneh | [Notes](https://hackmd.io/mNr5tcxtRTiStp9DC5oSXg)
 - [Polynomial Commitments](https://www.youtube.com/watch?v=WyT5KkKBJUw) | [Notes](https://hackmd.io/S9L9JGWUQ2W-2-NA24-5KQ)
 
+## Details to consider
+- This implementation is not optimized for zero-knowledge. The parts of PlonK that are responsible for ensuring strong privacy are left out of this implementation.
+- This implementation does not support Lookups & custom gates.
+
 
 ## Part 1 - The age of trusted setup
 
@@ -80,16 +84,67 @@ class CommonPreprocessedInput:
 
 ## Part 2 - The never ending rounds
 
+Ref : Plonk by Hand [Part 2](https://research.metastate.dev/plonk-by-hand-part-2-the-proof/)
+
+Let's start with our [prover.py](https://github.com/nullity00/plonkathon/blob/main/prover.py). 
+
 This is where we generate polynomials based on the inputs, outputs, selectors, constants. In theory, we are supposed to commit to these polynomials & the verifier queries these polynomials at a random point. In practice, to render the system non-interactive, we use Fiat-Shamir. We introduce random elements such as ``alpha``, ``beta``, ``gamma`` to evalute & then again commit to polynomials using random linear combination.
 
 ### Round 1
 
 - Accumulate all the left, right, output witness values and compute `A`, `B`, `C` polynomials using lagrange interpolation.
-- To generate a polynomial using values, we use the class `Polynomial` which takes in `n` witness values followed by `m - n` zeros (`m - group order`, `n - total no. of wires`) & the return basis of the polynomial
+- To generate a polynomial using values, we use the class `Polynomial` which takes in `n` witness values followed by `m - n` zeros (`m` is group order, `n` is total no. of wires) & the return basis of the polynomial
 - Commit to these polynomials using the commit function in `setup.py`
-- A full PLONK gate looks like ``Ql * A + Qr * B + Qo * C + Qm * A * C + Qc = PI`` where PI is the Witness Polynomial. We do a sanity check ``Ql * A + Qr * B + Qo * C + Qm * A * C + Qc - PI = Polynomial(0)`` to see if the polynomials are evaluated correctly.
+- A full PLONK gate looks like ``Ql * A + Qr * B + Qo * C + Qm * A * C + Qc = PI`` where PI is the Witness Polynomial. We do a sanity check ``Ql * A + Qr * B + Qo * C + Qm * A * C + Qc - PI = Polynomial(0)`` to see if the polynomials were evaluated correctly.
 
 ### Round 2
 
+- Round 2 is about committing to a single polynomial Z (permutation polynomial) which happens to encode all of the copy constraints. 
+- We calculate `Z_values` by accumulating `N / D` where `N` is the product of RLCs of witness polynomials & the roots of unity & `D` is is the product of RLCs of witness polynomials & the selector polynomials
+- The RLC function `self.rlc(val1, val2) = val_1 + self.beta * val_2 + gamma` where `beta` & `gamma` are random values we use to implement Fiat Shamir.
+- Construct Z, Lagrange interpolation polynomial for Z_values & commit to Z
+
+### Round 3
+
+- Our goal is to compute the quotient polynomial `T(x)`, which will be of degree 3n + 5 for n gates. The polynomial `T(x)` encodes the majority of the information contained in our circuit and assignments all at once.
 - 
+```
+    Open question:
+    Why is the degree 3n + 5? Guess +5 is for ZK.
+    If not zk, then 3 * (n + 1) - 1, for n gates
+```
+- We create cosets for polynomials using the `fft_expand` function. This function takes a random number, interpolates a polynomial at `[r, r * q, r * q**2 ... r * q**(4n-1)]` values where `r` is a random number . What is a coset btw ?
+```
+A coset, in the context of group theory, is a set that is formed by multiplying every element of a subgroup by a fixed element from the group.
+```
+- It is possible to find the quotient polynomial `T(x)` only if we satisfy these three conditions at the roots of unity.
+    1. All gates are correct:
+        `A * QL + B * QR + A * B * QM + C * QO + PI + QC = 0`
+    2. The permutation accumulator is valid
+        ```
+        Z(wx) = Z(x) * N / D
+        N = (rlc of A, X, 1) * (rlc of B, 2X, 1) * (rlc of C, 3X, 1) 
+        D = (rlc of A, S1, 1) *(rlc of B, S2, 1) * (rlc of C, S3, 1)
+        rlc = random linear combination: term_1 + beta * term2 + gamma * term3
+        ```
+    3. The permutation accumulator equals 1 at the start point
+        ```
+        (Z - 1) * L0 = 0
+        L0 = Lagrange polynomial, equal at all roots of unity except 1
+        Z = x^n - 1
+        ```
+- `T(x) = (Cosets of correct gates + cosets of permutation accumulator + Z_coset - 1 * L0 ) / Zh` 
+- Since the degree of `T(x)` is too high, we split it up into `T1`, `T2`, `T3`
+```
+    T1 = Cosets of correct gates / Zh
+    T2 = cosets of permutation accumulator / Zh
+    T3 = Z_coset - 1 * L0 / Zh
+```
+- Do a sanity check to see if we've computed `T1`, `T2`, `T3` correctly using Barycentric evaluation. What is [Barycentric evaluation](https://hackmd.io/@vbuterin/barycentric_evaluation) ?
+```
+Given a polynomial expressed as a list of evaluations at roots of unity, evaluate it at x directly, without using an FFT to convert to coeffs first
+```
+- Commit to `T1`, `T2`, `T3`
+
+
 
