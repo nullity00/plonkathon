@@ -146,5 +146,13 @@ Given a polynomial expressed as a list of evaluations at roots of unity, evaluat
 ```
 - Commit to `T1`, `T2`, `T3`
 
+### Round 4
 
+- Compute A, B, C, S1, S2, Z polynomial at `zeta` (a random point we use to implement Fiat Shamir) using Barycentric evaluation.
+
+### Round 5
+
+- In Round 5, we create two large polynomials that combine all the polynomials we've been using so far and we output commitments to them.
+- Compute the linearization polynomial, R & commit to it
+- Compute the polynomials Wz & Wzw , commit to it
 
