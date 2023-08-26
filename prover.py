@@ -192,13 +192,18 @@ class Prover:
 
         # Construct Z, Lagrange interpolation polynomial for Z_values
         self.Z_values_poly = Polynomial(Z_values, Basis.LAGRANGE)
-        # Cpmpute z_1 commitment to Z polynomial
+        # Compute z_1 commitment to Z polynomial
         z_1 = setup.commit(self.Z_values_poly)
 
         # Return z_1
         return Message2(z_1)
 
     def round_3(self) -> Message3:
+
+        # Open question:
+        # Why is the degree 3n + 5? Guess +5 is for ZK. 
+        # If not zk, then 3 * (n + 1) - 1, for n gates
+
         # Next comes the most massive computation of the entire protocol. Our goal is to compute the polynomial t, 
         # which will be of degree 3n + 5 for n gates. The polynomial t
         # encodes the majority of the information contained in our circuit and assignments all at once.
@@ -298,7 +303,7 @@ class Prover:
         #    (Z - 1) * L0 = 0
         #    L0 = Lagrange polynomial, equal at all roots of unity except 1
 
-                correctGates = (
+        correctGates = (
             A_coset * QL_coset
             + B_coset * QR_coset
             + A_coset * B_coset * QM_coset
