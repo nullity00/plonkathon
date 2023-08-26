@@ -22,14 +22,13 @@ class Setup(object):
 
     @classmethod
     def from_file(cls, filename):
-        contents = open(filename, "rb").read() 
-        powers = 2 ** contents[SETUP_FILE_POWERS_POS] 
+        contents = open(filename, "rb").read()
+        powers = 2 ** contents[SETUP_FILE_POWERS_POS]
 
         # values = integer values of g1 points
         values = [
             # bytes -> integer in little endian
-            int.from_bytes(contents[i : i + 32], "little") 
-
+            int.from_bytes(contents[i : i + 32], "little")
             # range(start, stop, step)
             # start = 80, stop = 80 + 32 * powers * 2, step = 32
             for i in range(
@@ -88,7 +87,7 @@ class Setup(object):
         assert len(monomial_basis.values) <= len(self.powers_of_x)
 
         # Compute linear combination of setup with values
-        pairs = [] # pairs = [(G, a1), (xG, a2), (x2G, a3), ...]
+        pairs = []  # pairs = [(G, a1), (xG, a2), (x2G, a3), ...]
         for i in range(len(monomial_basis.values)):
             pairs.append((self.powers_of_x[i], monomial_basis.values[i]))
         # computes & returns G * a1 + xG * a2 + x2G * a3 + ...
@@ -98,25 +97,25 @@ class Setup(object):
     def verification_key(self, pk: CommonPreprocessedInput) -> VerificationKey:
         # Create the appropriate VerificationKey object
         return VerificationKey(
-            group_order=pk.group_order, 
+            group_order=pk.group_order,
             # commitment to multiplication selector polynomial
-            Qm=self.commit(pk.QM), 
+            Qm=self.commit(pk.QM),
             # commitment to left selector polynomial
-            Ql=self.commit(pk.QL), 
+            Ql=self.commit(pk.QL),
             # commitment to right selector polynomial
-            Qr=self.commit(pk.QR), 
+            Qr=self.commit(pk.QR),
             # commitment to output selector polynomial
-            Qo=self.commit(pk.QO), 
+            Qo=self.commit(pk.QO),
             # 	commitment to constants selector polynomial
-            Qc=self.commit(pk.QC), 
-            # commitment to the first permutation polynomial 
-            S1=self.commit(pk.S1), 
+            Qc=self.commit(pk.QC),
+            # commitment to the first permutation polynomial
+            S1=self.commit(pk.S1),
             # commitment to the second permutation polynomial
-            S2=self.commit(pk.S2), 
+            S2=self.commit(pk.S2),
             # commitment to the third permutation polynomial
-            S3=self.commit(pk.S3), 
+            S3=self.commit(pk.S3),
             # X2 = xH, where H is a generator of G_2
-            X_2=self.X2, 
+            X_2=self.X2,
             # nth root of unity, n - group order
-            w=Scalar.root_of_unity(group_order=pk.group_order)
+            w=Scalar.root_of_unity(group_order=pk.group_order),
         )

@@ -38,8 +38,7 @@ class Polynomial:
                 )
             else:
                 return Polynomial(
-                    [self.values[0] + other] + self.values[1:],
-                    self.basis
+                    [self.values[0] + other] + self.values[1:], self.basis
                 )
 
     def __sub__(self, other):
@@ -60,10 +59,8 @@ class Polynomial:
                 )
             else:
                 return Polynomial(
-                    [self.values[0] - other] + self.values[1:],
-                    self.basis
+                    [self.values[0] - other] + self.values[1:], self.basis
                 )
-
 
     def __mul__(self, other):
         if isinstance(other, Polynomial):

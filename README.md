@@ -7,7 +7,7 @@ This is probably the simplest way to get to know how PLONK works. Just a few pre
 - [Polynomial Commitments](https://www.youtube.com/watch?v=WyT5KkKBJUw) | [Notes](https://hackmd.io/S9L9JGWUQ2W-2-NA24-5KQ)
 
 
-## PLONK - The age of trusted setup
+## Part 1 - The age of trusted setup
 
 Ref : Plonk by Hand [Part 1](https://research.metastate.dev/plonk-by-hand-part-1/)
 
@@ -77,4 +77,19 @@ class CommonPreprocessedInput:
     S3: Polynomial
 ```
 - We commit to all of the above polynomials & return the verification key.
+
+## Part 2 - The never ending rounds
+
+This is where we generate polynomials based on the inputs, outputs, selectors, constants. In theory, we are supposed to commit to these polynomials & the verifier queries these polynomials at a random point. In practice, to render the system non-interactive, we use Fiat-Shamir. We introduce random elements such as ``alpha``, ``beta``, ``gamma`` to evalute & then again commit to polynomials using random linear combination.
+
+### Round 1
+
+- Accumulate all the left, right, output witness values and compute `A`, `B`, `C` polynomials using lagrange interpolation.
+- To generate a polynomial using values, we use the class `Polynomial` which takes in `n` witness values followed by `m - n` zeros (`m - group order`, `n - total no. of wires`) & the return basis of the polynomial
+- Commit to these polynomials using the commit function in `setup.py`
+- A full PLONK gate looks like ``Ql * A + Qr * B + Qo * C + Qm * A * C + Qc = PI`` where PI is the Witness Polynomial. We do a sanity check ``Ql * A + Qr * B + Qo * C + Qm * A * C + Qc - PI = Polynomial(0)`` to see if the polynomials are evaluated correctly.
+
+### Round 2
+
+- 
 

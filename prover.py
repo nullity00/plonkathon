@@ -98,24 +98,24 @@ class Prover:
         # - A_values: witness[program.wires()[i].L]
         # - B_values: witness[program.wires()[i].R]
         # - C_values: witness[program.wires()[i].O]
+        A_values = [witness[program.wires()[i].L] for i in range(n_wires)]
+        B_values = [witness[program.wires()[i].R] for i in range(n_wires)]
+        C_values = [witness[program.wires()[i].O] for i in range(n_wires)]
 
         # Construct A, B, C Lagrange interpolation polynomials for
         # A_values, B_values, C_values
 
         n_wires = len(program.wires())
         self.A = Polynomial(
-            list(map(Scalar, [witness[program.wires()[i].L] for i in range(n_wires)]))
-            + [Scalar(0)] * (group_order - n_wires),
+            list(map(Scalar, A_values)) + [Scalar(0)] * (group_order - n_wires),
             Basis.LAGRANGE,
         )
         self.B = Polynomial(
-            list(map(Scalar, [witness[program.wires()[i].R] for i in range(n_wires)]))
-            + [Scalar(0)] * (group_order - n_wires),
+            list(map(Scalar, B_values)) + [Scalar(0)] * (group_order - n_wires),
             Basis.LAGRANGE,
         )
         self.C = Polynomial(
-            list(map(Scalar, [witness[program.wires()[i].O] for i in range(n_wires)]))
-            + [Scalar(0)] * (group_order - n_wires),
+            list(map(Scalar, C_values)) + [Scalar(0)] * (group_order - n_wires),
             Basis.LAGRANGE,
         )
 
@@ -124,9 +124,6 @@ class Prover:
         a_1 = setup.commit(self.A)
         b_1 = setup.commit(self.B)
         c_1 = setup.commit(self.C)
-
-        print(program.wires())
-        print(self.PI)
 
         # Sanity check that witness fulfils gate constraints
         assert (
@@ -201,10 +198,10 @@ class Prover:
     def round_3(self) -> Message3:
 
         # Open question:
-        # Why is the degree 3n + 5? Guess +5 is for ZK. 
+        # Why is the degree 3n + 5? Guess +5 is for ZK.
         # If not zk, then 3 * (n + 1) - 1, for n gates
 
-        # Next comes the most massive computation of the entire protocol. Our goal is to compute the polynomial t, 
+        # Next comes the most massive computation of the entire protocol. Our goal is to compute the polynomial t,
         # which will be of degree 3n + 5 for n gates. The polynomial t
         # encodes the majority of the information contained in our circuit and assignments all at once.
 
