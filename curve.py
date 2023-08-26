@@ -37,10 +37,10 @@ def ec_mul(pt, coeff):
 # would replace this with a fast lin-comb algo, see https://ethresear.ch/t/7238
 def ec_lincomb(pairs):
     return lincomb(
-        [pt for (pt, _) in pairs],
-        [int(n) % b.curve_order for (_, n) in pairs],
-        b.add,
-        b.Z1,
+        [pt for (pt, _) in pairs], # [G, xG, x2G, ...]
+        [int(n) % b.curve_order for (_, n) in pairs], # [a1, a2, a3, ...](mod curve_order)
+        b.add, # https://github.com/ethereum/py_ecc/blob/master/py_ecc/bn128/bn128_curve.py#L83
+        b.Z1, # Point at infinity over FQ, Z1 = None - https://github.com/ethereum/py_ecc/blob/master/py_ecc/bn128/bn128_curve.py#L48C1-L49C10
     )
     # Equivalent to:
     # o = b.Z1
