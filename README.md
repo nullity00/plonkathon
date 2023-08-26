@@ -42,10 +42,39 @@ G2 = (
     ]),
 )
 ```
-- FQ2 is a class of field points in [``py_ecc``](https://github.com/ethereum/py_ecc/blob/master/py_ecc/fields/field_elements.py#L357)
+- FQ2 is a class of field points in [py_ecc](https://github.com/ethereum/py_ecc/blob/master/py_ecc/fields/field_elements.py#L357)
 - We then obtain the start of G2 points & return ``(powers_of_x, X2)`` where X2 is the starting point in G2.
 
 ### ``def commit(self, values: Polynomial) -> G1Point``
 
-- 
+- This commit function requires the polynomials to be in Lagrange basis (This might not be the case always). 
+- Run inverse FFT to convert values from Lagrange basis to monomial basis.
+- Compute elliptic curve linear combination of setup with values ``[(G, a1), (xG, a2), (x2G, a3), ...]`` to return an elliptic curve point.
+
+### ``def verification_key(self, pk: CommonPreprocessedInput) -> VerificationKey``
+
+- To compute the verification key, we need the following :
+```
+class CommonPreprocessedInput:
+    """Common preprocessed input"""
+
+    group_order: int
+    # q_M(X) multiplication selector polynomial
+    QM: Polynomial
+    # q_L(X) left selector polynomial
+    QL: Polynomial
+    # q_R(X) right selector polynomial
+    QR: Polynomial
+    # q_O(X) output selector polynomial
+    QO: Polynomial
+    # q_C(X) constants selector polynomial
+    QC: Polynomial
+    # S_σ1(X) first permutation polynomial S_σ1(X)
+    S1: Polynomial
+    # S_σ2(X) second permutation polynomial S_σ2(X)
+    S2: Polynomial
+    # S_σ3(X) third permutation polynomial S_σ3(X)
+    S3: Polynomial
+```
+- We commit to all of the above polynomials & return the verification key.
 

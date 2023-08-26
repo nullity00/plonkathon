@@ -82,16 +82,16 @@ class Setup(object):
     def commit(self, values: Polynomial) -> G1Point:
         assert values.basis == Basis.LAGRANGE
 
-        # Run inverse FFT to convert values from Lagrange basis to monomial basis
         monomial_basis = values.ifft()
+
         # Optional: Check values size does not exceed maximum power setup can handle
-        # monomial : 2x + 5x2
         assert len(monomial_basis.values) <= len(self.powers_of_x)
+
         # Compute linear combination of setup with values
         pairs = [] # pairs = [(G, a1), (xG, a2), (x2G, a3), ...]
         for i in range(len(monomial_basis.values)):
             pairs.append((self.powers_of_x[i], monomial_basis.values[i]))
-        # computes G * a1 + xG * a2 + x2G * a3 + ...
+        # computes & returns G * a1 + xG * a2 + x2G * a3 + ...
         return ec_lincomb(pairs)
 
     # Generate the verification key for this program with the given setup
