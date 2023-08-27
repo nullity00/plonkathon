@@ -2,9 +2,10 @@
 
 Credits : [0xSachin](https://twitter.com/0xSachinK), [madab](https://twitter.com/iammadab), [mikefrancis](https://twitter.com/only1franchesco)
 
-This is probably the simplest way to get to know how PLONK works. Just a few prereq : 
-- [PLONK explainer](https://www.youtube.com/watch?v=A0oZVEXav24) by Dan Boneh | [Notes](https://hackmd.io/mNr5tcxtRTiStp9DC5oSXg)
-- [Polynomial Commitments](https://www.youtube.com/watch?v=WyT5KkKBJUw) | [Notes](https://hackmd.io/S9L9JGWUQ2W-2-NA24-5KQ)
+This is probably the simplest way to get to know how PLONK works. Just a few prereq :
+- [ZKP Notes](https://github.com/0xSachinK/zkp-mooc-notes)
+- [PLONK explainer](https://www.youtube.com/watch?v=A0oZVEXav24) by Dan Boneh 
+- [Polynomial Commitments](https://www.youtube.com/watch?v=WyT5KkKBJUw) by Yupeng Zhang 
 
 ## Details to consider
 - This implementation is not optimized for zero-knowledge. The parts of PlonK that are responsible for ensuring strong privacy are left out of this implementation.
